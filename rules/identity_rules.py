@@ -48,7 +48,7 @@ def check_identity_rules(data):
 
         if enabled and last_login is None:
             # Skip service accounts (they typically have no login)
-            if any(svc in username.lower() for svc in ["nova", "neutron", "cinder", "glance", "heat", "keystone", "swift", "barbican", "placement"]):
+            if any(svc in username.lower() for svc in ["nova", "neutron", "cinder", "glance", "heat", "keystone", "swift", "barbican", "placement", "admin"]):
                 continue
             findings.append({
                 "check": "User Never Logged In",

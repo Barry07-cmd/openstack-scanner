@@ -71,13 +71,17 @@ def check_network_rules(data):
                 "remediation": "Verify this exposure is intentional. Restrict to known IPs if this is an internal service.",
             })
 
-        # Allow-all rule
-        elif protocol is None and port_min is None and port_max is None:
+        # Allow-all rule (protocol=None covers API-created rules,
+        # tcp/udp with no port range covers Horizon's "All TCP" / "All UDP" rules)
+        elif (
+            (protocol is None and port_min is None and port_max is None) or
+            (protocol in ("tcp", "udp") and port_min is None and port_max is None)
+        ):
             findings.append({
                 "check": "Allow-All Rule",
                 "severity": "CRITICAL",
                 "resource": f"Security Group: {sg_name}",
-                "detail": f"Rule allows ALL traffic from {remote_ip} with no protocol or port restriction",
+                "detail": f"Rule allows ALL {protocol.upper() if protocol else 'traffic'} from {remote_ip} with no port restriction",
                 "remediation": "Replace with specific rules that allow only required ports and protocols.",
             })
 
