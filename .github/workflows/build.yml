@@ -1,0 +1,32 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Login to GitHub Container Registry
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # 3. Build image
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.actor }}/openstack-scanner:latest .
+
+      # 4. Push image
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.actor }}/openstack-scanner:latest
